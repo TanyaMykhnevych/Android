@@ -31,6 +31,7 @@
                 android:gravity="bottom|right"
                 android:padding="10dp"
                 android:text="0"
+                android:maxLength="16"
                 android:textSize="22sp" />
         </LinearLayout>
 
@@ -204,7 +205,7 @@
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
                 android:text="."
-                android:onClick="onDotClick"
+                android:onClick="onNumberClick"
                 android:textStyle="bold" />
 
             <Button

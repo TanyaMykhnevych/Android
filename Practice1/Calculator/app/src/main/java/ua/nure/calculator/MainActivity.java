@@ -10,79 +10,66 @@ import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity {
 
-    private String _operator = "";
-    private Stack<Double> _numbers = new Stack<Double>();
+    private String _operator = Operators.EMPTY;
+    private Stack<Double> _numbers = new Stack<>();
     private TextView _input;
     private boolean _needToClear = false;
+    private boolean _numberWasEntered = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
         _input = (TextView) findViewById(R.id.inputTv);
     }
 
     public void clearInput(View view) {
-        _input.setText("0");
-        _needToClear = false;
+        _input.setText(ValuesConstants.ZERO);
         _numbers.clear();
-        _operator = "";
+        _operator = Operators.EMPTY;
+        _numberWasEntered = false;
+        _needToClear = false;
     }
 
     public void onNumberClick(View view) {
         Button number = (Button) view;
 
-        if (_input.getText().toString().equals("0") || _needToClear) {
-            _input.setText("");
+        if (_input.getText().toString().equals(ValuesConstants.ZERO) || _needToClear) {
+            _input.setText(ValuesConstants.EMPTY);
         }
 
-        _input.append(number.getText());
+        if (number.getText().toString().equals(ValuesConstants.DOT)) {
+            onDotClick();
+        } else {
+            _input.append(number.getText());
+        }
+
         _needToClear = false;
+        _numberWasEntered = true;
     }
 
-    public void onDotClick(View view) {
-        if (!_input.getText().toString().contains("."))
-            _input.append(".");
-    }
-
-    public void onEqualClick(View view){
-        _needToClear = true;
-
-        Double number = Double.parseDouble(_input.getText().toString());
-
-        _numbers.push(number);
-
-        Double res = 0.0;
-        switch (_operator) {
-            case "+":
-                res = (_numbers.pop() + _numbers.pop());
-                break;
-            case "-":
-                res = (-_numbers.pop() + _numbers.pop());
-                break;
-            case "*":
-                res = (_numbers.pop() * _numbers.pop());
-                break;
-            case "/":
-                Double divider = _numbers.pop();
-                res = _numbers.pop() / divider;
-                break;
-            default:
-                break;
+    public void onDotClick() {
+        if (_input.getText().toString().isEmpty()) {
+            _input.append("0.");
         }
-        _input.setText(res.toString());
-        _numbers.push(res);
 
-        _operator = "";
+        if (!_input.getText().toString().contains(ValuesConstants.DOT))
+            _input.append(ValuesConstants.DOT);
+    }
+
+    public void onEqualClick(View view) {
+        if (!_numberWasEntered) return;
+        _needToClear = true;
+        _numbers.push(getInputValue());
+        processOperatorClick();
+
+        _operator = Operators.EMPTY;
     }
 
     public void onOperatorClick(View view) {
+        if (!_numberWasEntered) return;
         _needToClear = true;
-
-        Double number = Double.parseDouble(_input.getText().toString());
-
-        _numbers.push(number);
+        _numbers.push(getInputValue());
 
         Button operator = (Button) view;
         String currentOperator = operator.getText().toString();
@@ -91,28 +78,43 @@ public class MainActivity extends AppCompatActivity {
             _operator = currentOperator;
             return;
         } else {
-            Double res = 0.0;
-            switch (_operator) {
-                case "+":
-                    res = (_numbers.pop() + _numbers.pop());
-                    break;
-                case "-":
-                    res = (-_numbers.pop() + _numbers.pop());
-                    break;
-                case "*":
-                    res = (_numbers.pop() * _numbers.pop());
-                    break;
-                case "/":
-                    Double divider = _numbers.pop();
-                    res = _numbers.pop() / divider;
-                    break;
-                default:
-                    break;
-            }
-            _input.setText(res.toString());
-            _numbers.push(res);
-
+            processOperatorClick();
             _operator = currentOperator;
         }
+    }
+
+    private void processOperatorClick() {
+        Double res = 0.0;
+        switch (_operator) {
+            case Operators.PLUS:
+                res = (_numbers.pop() + _numbers.pop());
+                break;
+            case Operators.MINUS:
+                res = (-_numbers.pop() + _numbers.pop());
+                break;
+            case Operators.MULTIPLICATION:
+                res = (_numbers.pop() * _numbers.pop());
+                break;
+            case Operators.DIVISION:
+                Double divider = _numbers.pop();
+                res = _numbers.pop() / divider;
+                res = Double.isNaN(res) ? 0 : res;
+                break;
+            default:
+                break;
+        }
+
+        if (res % 1 == 0) {
+            Integer result = (int) Math.round(res);
+            _input.setText(result.toString());
+        } else {
+            _input.setText(res.toString());
+        }
+
+        _numbers.push(res);
+    }
+
+    private Double getInputValue() {
+        return Double.parseDouble(_input.getText().toString());
     }
 }
