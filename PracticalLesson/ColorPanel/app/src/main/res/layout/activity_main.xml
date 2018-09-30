@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="ua.nure.colorpanel.MainActivity">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:weightSum="3">
+
+        <LinearLayout
+            android:id="@+id/ColorPanel"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            android:layout_weight="2">
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/bottom_seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            android:layout_weight="1">
+            <SeekBar
+                android:id="@+id/RedSeekBar"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:max="255"
+                android:thumbTint="@android:color/holo_red_dark"/>
+            <SeekBar
+                android:id="@+id/GreenSeekBar"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:max="255"
+                android:thumbTint="@android:color/holo_green_dark"/>
+            <SeekBar
+                android:id="@+id/BlueSeekBar"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:max="255"
+                android:thumbTint="@android:color/holo_blue_dark"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>
+
+
+
