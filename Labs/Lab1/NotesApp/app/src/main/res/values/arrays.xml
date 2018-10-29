@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="note_importance">
+        <item>@string/importance_low</item>
+        <item>@string/importance_normal</item>
+        <item>@string/importance_high</item>
+    </string-array>
+</resources>

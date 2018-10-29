@@ -32,12 +32,10 @@ public class MainActivity extends AppCompatActivity {
         savedInstanceState.putString("operator", _operator);
         savedInstanceState.putString("inputText", _input.getText().toString());
 
-        if(_numbers.size() >= 1)
-        {
+        if (_numbers.size() >= 1) {
             savedInstanceState.putDouble("stackNumber1", _numbers.pop());
         }
-        if(_numbers.size() >= 1)
-        {
+        if (_numbers.size() >= 1) {
             savedInstanceState.putDouble("stackNumber2", _numbers.pop());
         }
     }
@@ -52,14 +50,12 @@ public class MainActivity extends AppCompatActivity {
         _input.setText(savedInstanceState.getString("inputText"));
 
         Double num2 = savedInstanceState.getDouble("stackNumber2");
-        if (num2 != 0)
-        {
+        if (num2 != 0) {
             _numbers.push(num2);
         }
 
         Double num1 = savedInstanceState.getDouble("stackNumber1");
-        if (num1 != 0)
-        {
+        if (num1 != 0) {
             _numbers.push(num1);
         }
     }

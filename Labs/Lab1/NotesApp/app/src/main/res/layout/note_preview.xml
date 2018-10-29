@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="ua.nure.notesapp.activities.NotePreviewActivity">
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ScrollView01"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:scrollbars="vertical">
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:orientation="vertical"
+        android:layout_height="fill_parent"
+        android:paddingTop="10dp"
+        android:layout_margin="10dp">
+
+        <EditText
+            android:id="@+id/NoteTitle"
+            android:layout_height="wrap_content"
+            android:hint="@string/note_title"
+            android:inputType="text"
+            android:layout_width="fill_parent"
+            android:maxLength="50"
+            android:layout_gravity="center">
+        </EditText>
+
+        <EditText
+            android:id="@+id/NoteDescription"
+            android:layout_height="100dp"
+            android:hint="@string/note_description"
+            android:inputType="text|textMultiLine"
+            android:layout_width="fill_parent"
+            android:maxLength="150"
+            android:layout_gravity="center">
+        </EditText>
+
+        <Spinner
+            android:id="@+id/NoteImportance"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:entries="@array/note_importance"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center">
+        </Spinner>
+
+        <Button
+            android:id="@+id/saveNoteBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/saveNoteBtn"
+            android:layout_marginTop="25dp"
+            android:background="@color/colorPrimary"/>
+
+        <!--also need image and datetime-->
+
+    </LinearLayout>
+</ScrollView>
+
+</android.support.design.widget.CoordinatorLayout>
