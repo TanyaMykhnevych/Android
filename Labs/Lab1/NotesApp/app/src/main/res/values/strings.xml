@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">NotesApp</string>
-    <string name="add_note_title">Add note</string>
     <string name="action_settings">Settings</string>
     <string name="image">Thumbnail</string>
     <string name="add_note">Add</string>

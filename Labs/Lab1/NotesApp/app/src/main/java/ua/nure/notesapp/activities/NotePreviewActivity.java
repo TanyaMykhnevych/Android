@@ -27,7 +27,10 @@ public class NotePreviewActivity extends AppCompatActivity {
         Intent intent = getIntent();
         noteToEdit = (Note) intent.getSerializableExtra("note_to_edit");
         if (noteToEdit != null) {
+            setTitle(R.string.edit_note);
             setViewValuesFromNote(noteToEdit);
+        } else {
+            setTitle(R.string.add_note);
         }
     }
 
@@ -50,11 +53,7 @@ public class NotePreviewActivity extends AppCompatActivity {
     private Note getNoteToSave() {
         Note note = noteToEdit == null ? new Note() : noteToEdit;
 
-        if(!setTitle((note))){
-            return null;
-        }
-
-        if(!setDescription((note))){
+        if(!setTitle((note)) || !setDescription((note))){
             return null;
         }
 
@@ -74,7 +73,6 @@ public class NotePreviewActivity extends AppCompatActivity {
         if( TextUtils.isEmpty(title.getText())){
             title.setError( getResources().getString(R.string.title_required_error));
             return false;
-
         }
         note.setTitle(title.getText().toString());
         return true;
@@ -85,7 +83,6 @@ public class NotePreviewActivity extends AppCompatActivity {
         if( TextUtils.isEmpty(description.getText())){
             description.setError( getResources().getString(R.string.description_required_error));
             return false;
-
         }
         note.setDescription(description.getText().toString());
         return true;

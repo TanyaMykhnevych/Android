@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Нотатки</string>
-    <string name="add_note_title">Додати нотатку</string>
     <string name="action_settings">Настройки</string>
     <string name="image">Іконка</string>
     <string name="add_note">Додати</string>

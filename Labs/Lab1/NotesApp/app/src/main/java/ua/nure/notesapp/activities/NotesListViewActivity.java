@@ -31,12 +31,14 @@ public class NotesListViewActivity extends AppCompatActivity {
     ListView listView;
     NotesStore _store;
     NotesListViewAdapter adapter;
+    Menu optionsMenu;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.notes_list_view);
+        setTitle(R.string.app_name);
 
         _store = new NotesStore();
 
@@ -50,31 +52,8 @@ public class NotesListViewActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        MenuItem item = menu.findItem(R.id.languageSpinner);
-        Spinner spinner = (Spinner) item.getActionView();
-
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.languages, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                if (pos == 1) {
-                    Toast.makeText(parent.getContext(), "Ви обрали українську", Toast.LENGTH_SHORT)
-                            .show();
-                    setLocale("uk");
-                } else if (pos == 2) {
-                    Toast.makeText(parent.getContext(), "You have selected English", Toast.LENGTH_SHORT)
-                            .show();
-                    setLocale("en");
-                }
-            }
-
-            public void onNothingSelected(AdapterView<?> arg0) {
-                // TODO Auto-generated method stub
-            }
-        });
+        optionsMenu = menu;
+        setLanguageSpinner();
         return true;
     }
 
@@ -136,10 +115,45 @@ public class NotesListViewActivity extends AppCompatActivity {
         Configuration conf = res.getConfiguration();
         conf.locale = myLocale;
         res.updateConfiguration(conf, dm);
-        Intent refresh = new Intent(this, NotesListViewActivity.class);
-        startActivity(refresh);
-        finish();
+        onConfigurationChanged(conf);
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        MenuItem addItem = optionsMenu.findItem(R.id.add);
+        addItem.setTitle(getResources().getString(R.string.add_note));
+        setTitle(R.string.app_name);
+        setLanguageSpinner();
+
+        super.onConfigurationChanged(newConfig);
+    }
+
+    private void setLanguageSpinner(){
+        MenuItem item = optionsMenu.findItem(R.id.languageSpinner);
+        Spinner spinner = (Spinner) item.getActionView();
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.languages, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+                if (pos == 1) {
+                    Toast.makeText(parent.getContext(), "Ви обрали українську", Toast.LENGTH_SHORT)
+                            .show();
+                    setLocale("uk");
+                } else if (pos == 2) {
+                    Toast.makeText(parent.getContext(), "You have selected English", Toast.LENGTH_SHORT)
+                            .show();
+                    setLocale("en");
+                }
+            }
+
+            public void onNothingSelected(AdapterView<?> arg0) {
+                // TODO Auto-generated method stub
+            }
+        });
+    }
 }
 

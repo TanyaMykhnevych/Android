@@ -8,10 +8,10 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:configChanges="locale">
         <activity
             android:name=".activities.NotesListViewActivity"
-            android:label="@string/app_name"
             android:configChanges="locale|orientation"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -23,7 +23,6 @@
         </activity>
         <activity
             android:name=".activities.NotePreviewActivity"
-            android:label="@string/add_note_title"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
