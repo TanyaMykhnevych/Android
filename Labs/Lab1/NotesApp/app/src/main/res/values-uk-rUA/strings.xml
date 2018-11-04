@@ -14,6 +14,8 @@
     <string name="importance_high">Високий</string>
     <string name="saveNoteBtn">Зберегти</string>
     <string name="language">Мова</string>
+    <string name="title_required_error">Назва - обов\'язкове поле</string>
+    <string name="description_required_error">Опис - обов\'язкове поле</string>
 
     <string-array name="languages">
         <item>Обрати мову</item>

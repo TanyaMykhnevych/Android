@@ -14,6 +14,8 @@
     <string name="importance_high">High</string>
     <string name="saveNoteBtn">Save</string>
     <string name="language">Language</string>
+    <string name="title_required_error">Title is required!</string>
+    <string name="description_required_error">Description is required!</string>
 
     <string-array name="languages">
         <item>Select language</item>
