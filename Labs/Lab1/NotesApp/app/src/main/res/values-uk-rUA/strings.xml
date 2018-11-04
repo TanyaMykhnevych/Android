@@ -15,6 +15,7 @@
     <string name="language">Мова</string>
     <string name="title_required_error">Назва - обов\'язкове поле</string>
     <string name="description_required_error">Опис - обов\'язкове поле</string>
+    <string name="choose_language_message">Ви обрали українську</string>
 
     <string-array name="languages">
         <item>Мова</item>

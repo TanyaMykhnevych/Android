@@ -1,5 +1,7 @@
 package ua.nure.notesapp.activities;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.support.v7.app.AppCompatActivity;
@@ -14,9 +16,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.content.res.Configuration;
+import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
+
 import java.util.Locale;
 
 import ua.nure.notesapp.NotesListViewAdapter;
@@ -24,7 +28,7 @@ import ua.nure.notesapp.NotesStore;
 import ua.nure.notesapp.R;
 import ua.nure.notesapp.models.Note;
 
-public class NotesListViewActivity extends AppCompatActivity {
+public class NotesListViewActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
     private final static int REQUEST_CODE_1 = 1;
 
     ListView listView;
@@ -42,7 +46,7 @@ public class NotesListViewActivity extends AppCompatActivity {
 
         _store = new NotesStore();
 
-        listView = (ListView) findViewById(R.id.list);
+        listView = findViewById(R.id.list);
         adapter = new NotesListViewAdapter(this, R.layout.note, _store.getNotes());
         listView.setAdapter(adapter);
 
@@ -54,6 +58,8 @@ public class NotesListViewActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         optionsMenu = menu;
         setLanguageSpinner();
+        setSearchView();
+
         return true;
     }
 
@@ -115,7 +121,7 @@ public class NotesListViewActivity extends AppCompatActivity {
         Configuration conf = res.getConfiguration();
         conf.locale = myLocale;
         res.updateConfiguration(conf, dm);
-        if(changeCong) onConfigurationChanged(conf);
+        if (changeCong) onConfigurationChanged(conf);
     }
 
     @Override
@@ -129,7 +135,18 @@ public class NotesListViewActivity extends AppCompatActivity {
         super.onConfigurationChanged(newConfig);
     }
 
-    private void setLanguageSpinner(){
+    @Override
+    public boolean onQueryTextSubmit(String s) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String s) {
+        adapter.getFilter().filter(s);
+        return true;
+    }
+
+    private void setLanguageSpinner() {
         MenuItem item = optionsMenu.findItem(R.id.languageSpinner);
         Spinner spinner = (Spinner) item.getActionView();
 
@@ -141,15 +158,15 @@ public class NotesListViewActivity extends AppCompatActivity {
 
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
                 if (pos == 1) {
-                    Toast.makeText(parent.getContext(), "Ви обрали українську", Toast.LENGTH_SHORT)
-                            .show();
                     locale = "uk";
                     setLocale(true);
-                } else if (pos == 2) {
-                    Toast.makeText(parent.getContext(), "You have selected English", Toast.LENGTH_SHORT)
+                    Toast.makeText(parent.getContext(), getResources().getString(R.string.choose_language_message), Toast.LENGTH_SHORT)
                             .show();
+                } else if (pos == 2) {
                     locale = "en";
                     setLocale(true);
+                    Toast.makeText(parent.getContext(), getResources().getString(R.string.choose_language_message), Toast.LENGTH_SHORT)
+                            .show();
                 }
             }
 
@@ -157,5 +174,18 @@ public class NotesListViewActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void setSearchView() {
+        SearchManager searchManager = (SearchManager)
+                getSystemService(Context.SEARCH_SERVICE);
+        MenuItem searchMenuItem = optionsMenu.findItem(R.id.app_bar_search);
+        SearchView searchView = (SearchView) searchMenuItem.getActionView();
+
+        searchView.setSearchableInfo(searchManager.
+                getSearchableInfo(getComponentName()));
+        searchView.setSubmitButtonEnabled(true);
+        searchView.setOnQueryTextListener(this);
+    }
+
 }
 
