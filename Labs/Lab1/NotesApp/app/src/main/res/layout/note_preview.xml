@@ -46,15 +46,30 @@
             android:layout_gravity="center">
         </Spinner>
 
+        <DatePicker
+            android:id="@+id/date_picker"
+            android:layout_marginTop="20dp"
+            android:layout_width="fill_parent"
+            android:calendarViewShown="true"
+            android:spinnersShown="false"
+            android:layout_height="wrap_content"/>
+
+        <TimePicker
+            android:id="@+id/time_picker"
+            android:layout_marginTop="10dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+
         <Button
             android:id="@+id/saveNoteBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/saveNoteBtn"
             android:layout_marginTop="25dp"
+            android:layout_marginBottom="25dp"
             android:background="@color/colorPrimary"/>
 
-        <!--also need image and datetime-->
+        <!--also need image-->
 
     </LinearLayout>
 </ScrollView>

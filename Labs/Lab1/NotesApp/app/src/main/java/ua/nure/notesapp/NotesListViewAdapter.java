@@ -68,7 +68,7 @@ public class NotesListViewAdapter extends ArrayAdapter<Note> implements Filterab
             holder = new ViewHolder();
             holder.txtDesc = (TextView) convertView.findViewById(R.id.description);
             holder.txtTitle = (TextView) convertView.findViewById(R.id.title);
-            // holder.imageView = (ImageView) convertView.findViewById(R.id.icon);
+            holder.imageView = (ImageView) convertView.findViewById(R.id.icon);
             holder.importance = (ImageView) convertView.findViewById(R.id.importance);
             holder.txtDate = (TextView) convertView.findViewById(R.id.date);
             convertView.setTag(holder);
@@ -78,7 +78,8 @@ public class NotesListViewAdapter extends ArrayAdapter<Note> implements Filterab
         holder.txtDesc.setText(note.getDescription());
         holder.txtTitle.setText(note.getTitle());
         holder.importance.setImageResource(note.getImportanceIcon());
-        holder.txtDate.setText(new SimpleDateFormat("MM/dd/yyyy HH:mm").format(new Date()).toString());
+        holder.txtDate.setText(new SimpleDateFormat("MM/dd/yyyy HH:mm").format(note.getDate()));
+
 
         // TODO: find solution for notes images
 
