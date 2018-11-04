@@ -3,6 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools" tools:context=".NotesListViewActivity">
 
     <item
+        android:id="@+id/app_bar_search"
+        android:icon="@drawable/ic_search_black_24dp"
+        android:title="Search"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/add" android:icon="@android:drawable/ic_menu_add" app:showAsAction="always" android:title="@string/add_note"/>
     <item
         android:id="@+id/languageSpinner"

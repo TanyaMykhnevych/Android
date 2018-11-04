@@ -27,11 +27,11 @@ import ua.nure.notesapp.models.Note;
 public class NotesListViewActivity extends AppCompatActivity {
     private final static int REQUEST_CODE_1 = 1;
 
-    Spinner spinnerctrl;
     ListView listView;
     NotesStore _store;
     NotesListViewAdapter adapter;
     Menu optionsMenu;
+    String locale = "en";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -108,18 +108,19 @@ public class NotesListViewActivity extends AppCompatActivity {
         return true;
     }
 
-    public void setLocale(String lang) {
-        Locale myLocale = new Locale(lang);
+    public void setLocale(boolean changeCong) {
+        Locale myLocale = new Locale(locale);
         Resources res = getResources();
         DisplayMetrics dm = res.getDisplayMetrics();
         Configuration conf = res.getConfiguration();
         conf.locale = myLocale;
         res.updateConfiguration(conf, dm);
-        onConfigurationChanged(conf);
+        if(changeCong) onConfigurationChanged(conf);
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+        setLocale(false);
         MenuItem addItem = optionsMenu.findItem(R.id.add);
         addItem.setTitle(getResources().getString(R.string.add_note));
         setTitle(R.string.app_name);
@@ -142,16 +143,17 @@ public class NotesListViewActivity extends AppCompatActivity {
                 if (pos == 1) {
                     Toast.makeText(parent.getContext(), "Ви обрали українську", Toast.LENGTH_SHORT)
                             .show();
-                    setLocale("uk");
+                    locale = "uk";
+                    setLocale(true);
                 } else if (pos == 2) {
                     Toast.makeText(parent.getContext(), "You have selected English", Toast.LENGTH_SHORT)
                             .show();
-                    setLocale("en");
+                    locale = "en";
+                    setLocale(true);
                 }
             }
 
             public void onNothingSelected(AdapterView<?> arg0) {
-                // TODO Auto-generated method stub
             }
         });
     }

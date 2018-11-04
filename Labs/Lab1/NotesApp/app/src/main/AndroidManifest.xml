@@ -12,7 +12,7 @@
         android:configChanges="locale">
         <activity
             android:name=".activities.NotesListViewActivity"
-            android:configChanges="locale|orientation"
+            android:configChanges="locale|orientation|keyboardHidden|screenSize"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
