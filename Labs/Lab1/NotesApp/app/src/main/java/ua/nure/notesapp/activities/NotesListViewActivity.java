@@ -58,6 +58,7 @@ public class NotesListViewActivity extends AppCompatActivity implements SearchVi
         getMenuInflater().inflate(R.menu.menu_main, menu);
         optionsMenu = menu;
         setLanguageSpinner();
+        setImportanceSpinner();
         setSearchView();
 
         return true;
@@ -131,6 +132,7 @@ public class NotesListViewActivity extends AppCompatActivity implements SearchVi
         addItem.setTitle(getResources().getString(R.string.add_note));
         setTitle(R.string.app_name);
         setLanguageSpinner();
+        setImportanceSpinner();
 
         super.onConfigurationChanged(newConfig);
     }
@@ -168,6 +170,25 @@ public class NotesListViewActivity extends AppCompatActivity implements SearchVi
                     Toast.makeText(parent.getContext(), getResources().getString(R.string.choose_language_message), Toast.LENGTH_SHORT)
                             .show();
                 }
+            }
+
+            public void onNothingSelected(AdapterView<?> arg0) {
+            }
+        });
+    }
+
+    private void setImportanceSpinner() {
+        MenuItem item = optionsMenu.findItem(R.id.importanceSpinner);
+        Spinner spinner = (Spinner) item.getActionView();
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.importance, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+                // write filter logic here
             }
 
             public void onNothingSelected(AdapterView<?> arg0) {
