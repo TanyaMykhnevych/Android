@@ -21,7 +21,6 @@ public class NotesListViewAdapter extends ArrayAdapter<Note> implements Filterab
     private List<Note> _notesList;
     private List<Note> _filteredNotes;
     private NoteFilter _noteFilter;
-    private Typeface _typeface;
 
     public NotesListViewAdapter(Context context, int resourceId,
                                 List<Note> items) {
@@ -58,33 +57,50 @@ public class NotesListViewAdapter extends ArrayAdapter<Note> implements Filterab
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder = null;
+
+        ViewHolder holder;
         Note note = getItem(position);
 
-        LayoutInflater mInflater = (LayoutInflater) _context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.note, null);
             holder = new ViewHolder();
-            holder.txtDesc = (TextView) convertView.findViewById(R.id.description);
-            holder.txtTitle = (TextView) convertView.findViewById(R.id.title);
-            holder.imageView = (ImageView) convertView.findViewById(R.id.icon);
-            holder.importance = (ImageView) convertView.findViewById(R.id.importance);
-            holder.txtDate = (TextView) convertView.findViewById(R.id.date);
-            convertView.setTag(holder);
-        } else
+            convertView = initViews(holder);
+        } else {
             holder = (ViewHolder) convertView.getTag();
+        }
 
+        updateHolderData(holder, note);
+
+        return convertView;
+    }
+
+    private void updateHolderData(ViewHolder holder, Note note) {
         holder.txtDesc.setText(note.getDescription());
         holder.txtTitle.setText(note.getTitle());
         holder.importance.setImageResource(note.getImportanceIcon());
         holder.txtDate.setText(new SimpleDateFormat("MM/dd/yyyy HH:mm").format(note.getDate()));
 
-
         // TODO: find solution for notes images
+    }
 
+    private View initViews(ViewHolder viewHolder) {
+        LayoutInflater mInflater = (LayoutInflater) _context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+
+        View convertView = mInflater.inflate(R.layout.note, null);
+        ViewHolder holder = initViewHolder(convertView);
+        convertView.setTag(holder);
         return convertView;
     }
+
+    private ViewHolder initViewHolder(View convertView) {
+        ViewHolder holder = new ViewHolder();
+        holder.txtDesc = convertView.findViewById(R.id.description);
+        holder.txtTitle = convertView.findViewById(R.id.title);
+        holder.imageView = convertView.findViewById(R.id.icon);
+        holder.importance = convertView.findViewById(R.id.importance);
+        holder.txtDate = convertView.findViewById(R.id.date);
+        return holder;
+    }
+
 
     @Override
     public Filter getFilter() {
@@ -104,8 +120,10 @@ public class NotesListViewAdapter extends ArrayAdapter<Note> implements Filterab
                 List<Note> tempList = new ArrayList<>();
 
                 for (Note note : _notesList) {
-                    if (note.getDescription().toLowerCase().contains(constraint.toString().toLowerCase()) ||
-                            note.getTitle().toLowerCase().contains(constraint.toString().toLowerCase())) {
+                    String constraintLowerCase = constraint.toString().toLowerCase();
+                    String noteDescription = note.getDescription().toLowerCase();
+                    String noteTitle = note.getTitle().toLowerCase();
+                    if (noteDescription.contains(constraintLowerCase) || noteTitle.contains(constraintLowerCase)) {
                         tempList.add(note);
                     }
                 }

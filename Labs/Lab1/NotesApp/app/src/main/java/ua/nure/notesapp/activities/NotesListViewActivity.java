@@ -31,8 +31,9 @@ import ua.nure.notesapp.models.Note;
 public class NotesListViewActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
     private final static int REQUEST_CODE_1 = 1;
 
+    private final NotesStore _store = new NotesStore();
+
     ListView listView;
-    NotesStore _store;
     NotesListViewAdapter adapter;
     Menu optionsMenu;
     String locale = "en";
@@ -44,10 +45,8 @@ public class NotesListViewActivity extends AppCompatActivity implements SearchVi
         setContentView(R.layout.notes_list_view);
         setTitle(R.string.app_name);
 
-        _store = new NotesStore();
-
-        listView = findViewById(R.id.list);
         adapter = new NotesListViewAdapter(this, R.layout.note, _store.getNotes());
+        listView = findViewById(R.id.list);
         listView.setAdapter(adapter);
 
         registerForContextMenu(listView);
@@ -204,7 +203,7 @@ public class NotesListViewActivity extends AppCompatActivity implements SearchVi
 
         searchView.setSearchableInfo(searchManager.
                 getSearchableInfo(getComponentName()));
-        searchView.setSubmitButtonEnabled(true);
+        searchView.setSubmitButtonEnabled(false);
         searchView.setOnQueryTextListener(this);
     }
 
