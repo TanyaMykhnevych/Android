@@ -187,6 +187,15 @@ public class NotesListViewActivity extends AppCompatActivity implements SearchVi
                 R.array.importance, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+
+        int initialPosition;
+        if(_importanceFilter == null) {
+            initialPosition = 0;
+        } else {
+            initialPosition = _importanceFilter.getValue() + 1;
+        }
+        spinner.setSelection(initialPosition);
+
         spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
