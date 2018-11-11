@@ -102,8 +102,6 @@ public class NotesListViewAdapter extends ArrayAdapter<Note> implements Filterab
         holder.txtDate.setText(new SimpleDateFormat("MM/dd/yyyy HH:mm").format(note.getDate()));
 
         ImageHelper.DrawImage(note.getImagePath(), _context, holder.imageView);
-
-        return convertView;
     }
 
     @Override

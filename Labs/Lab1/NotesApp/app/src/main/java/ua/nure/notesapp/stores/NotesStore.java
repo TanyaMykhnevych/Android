@@ -64,41 +64,12 @@ public class NotesStore {
         _notes.remove(position);
     }
 
-//    public void remove(Note note) {
-//        UUID noteId = note.getId();
-//        Note noteFromList = findById(noteId);
-//
-//        _notes.remove(noteFromList);
-//    }
-//
-//    public Integer getTotalCount() {
-//        return _notes.size();
-//    }
-//
-//    public void clear() {
-//        _notes.clear();
-//    }
+    public void remove(Note note) {
+        UUID noteId = note.getId();
+        Note noteFromList = findById(noteId);
 
-//    public List<Note> getByImportance(Importance importance) {
-//        List<Note> filteredList = new ArrayList<>();
-//        for (Note note : _notes) {
-//            if (note.getImportance().equals(importance)) {
-//                filteredList.add(note);
-//            }
-//        }
-//        return filteredList;
-//    }
-//
-//    public List<Note> getByDescription(String description) {
-//        List<Note> filteredList = new ArrayList<>();
-//        for (Note note : _notes) {
-//            if (note.getDescription().contains(description)) {
-//                filteredList.add(note);
-//            }
-//        }
-//        return filteredList;
-//    }
-
+        _notes.remove(noteFromList);
+    }
 
     public void addOrUpdate(Note note) {
         Note existingNote = findById(note.getId());
