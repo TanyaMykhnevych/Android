@@ -92,7 +92,7 @@ public class NotesListViewActivity extends AppCompatActivity implements SearchVi
                     Note savedNote = (Note) dataIntent.getSerializableExtra("saved_note");
                     if (savedNote != null) {
                         _store.addOrUpdate(savedNote);
-                        adapter.notifyDataSetChanged();
+                        refreshNoteListWithFilters();
                     }
                 }
         }
@@ -110,7 +110,7 @@ public class NotesListViewActivity extends AppCompatActivity implements SearchVi
             this.startActivityForResult(intent, REQUEST_CODE_1);
         } else if (item.getItemId() == R.id.delete) {
             _store.remove(note);
-            adapter.notifyDataSetChanged();
+            refreshNoteListWithFilters();
         } else {
             return false;
         }
@@ -202,7 +202,8 @@ public class NotesListViewActivity extends AppCompatActivity implements SearchVi
 
                 NotesListViewAdapter listViewAdapter = (NotesListViewAdapter)listView.getAdapter();
                 listViewAdapter.updateImportanceFilter(_importanceFilter);
-                listViewAdapter.getFilter().filter(getSearchString());
+
+                refreshNoteListWithFilters();
             }
 
             public void onNothingSelected(AdapterView<?> arg0) {
@@ -226,6 +227,10 @@ public class NotesListViewActivity extends AppCompatActivity implements SearchVi
         MenuItem searchMenuItem = optionsMenu.findItem(R.id.app_bar_search);
         SearchView searchView = (SearchView) searchMenuItem.getActionView();
         return searchView.getQuery().toString();
+    }
+
+    private void refreshNoteListWithFilters() {
+        adapter.getFilter().filter(getSearchString());
     }
 
 }
