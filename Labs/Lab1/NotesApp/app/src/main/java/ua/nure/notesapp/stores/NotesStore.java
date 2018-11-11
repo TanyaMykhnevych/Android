@@ -1,4 +1,4 @@
-package ua.nure.notesapp;
+package ua.nure.notesapp.stores;
 
 import java.util.ArrayList;
 import java.util.List;

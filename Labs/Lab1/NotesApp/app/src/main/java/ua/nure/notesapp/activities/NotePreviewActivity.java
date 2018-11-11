@@ -1,6 +1,7 @@
 package ua.nure.notesapp.activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -8,28 +9,54 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TimePicker;
 
+import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import ua.nure.notesapp.R;
+import ua.nure.notesapp.helpers.ImageHelper;
 import ua.nure.notesapp.models.Importance;
 import ua.nure.notesapp.models.Note;
 
 public class NotePreviewActivity extends AppCompatActivity {
+    private static final int SELECT_PICTURE = 1;
     private Note noteToEdit;
+    Button btnSelectImageFromGalery;
+    ImageView vImageDisplay;
+    String currentImagePath;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.note_preview);
+
+        btnSelectImageFromGalery = (Button) findViewById(R.id.btnSelectImageFromGalery);
+        btnSelectImageFromGalery.setOnClickListener(btnSelectImageFromGaleryListener);
+
+        vImageDisplay = (ImageView) findViewById(R.id.imageViewEditForm);
+
         fillViewIfEdit();
         prepareSaveButton();
 
         Calendar c = Calendar.getInstance();
         ((DatePicker) findViewById(R.id.date_picker)).setMinDate(c.getTimeInMillis());
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == SELECT_PICTURE) {
+                Uri selectedImageUri = data.getData();
+                currentImagePath = selectedImageUri.toString();
+                ImageHelper.DrawImage(currentImagePath, this, vImageDisplay);
+            }
+        }
     }
 
     private void fillViewIfEdit() {
@@ -66,6 +93,7 @@ public class NotePreviewActivity extends AppCompatActivity {
             return null;
         }
 
+        note.setImagePath(currentImagePath);
         setImportance(note);
         setDateTime(note);
 
@@ -80,6 +108,8 @@ public class NotePreviewActivity extends AppCompatActivity {
         ((DatePicker) findViewById(R.id.date_picker)).updateDate(noteDate.getYear(), noteDate.getMonth(), noteDate.getDay());
         ((TimePicker) findViewById(R.id.time_picker)).setCurrentHour(noteDate.getHours());
         ((TimePicker) findViewById(R.id.time_picker)).setCurrentMinute(noteDate.getMinutes());
+        ImageHelper.DrawImage(note.getImagePath(), this, vImageDisplay);
+        currentImagePath = note.getImagePath();
     }
 
     private boolean setTitle(Note note) {
@@ -125,4 +155,15 @@ public class NotePreviewActivity extends AppCompatActivity {
 
         note.setDate(calendar.getTime());
     }
+
+    private View.OnClickListener btnSelectImageFromGaleryListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(Intent.createChooser(intent,
+                    "Select Picture"), SELECT_PICTURE);
+        }
+    };
 }

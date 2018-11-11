@@ -1,7 +1,6 @@
-package ua.nure.notesapp;
+package ua.nure.notesapp.adapters;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,20 +9,21 @@ import android.widget.*;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
+import ua.nure.notesapp.R;
+import ua.nure.notesapp.helpers.ImageHelper;
 import ua.nure.notesapp.models.Note;
 
 public class NotesListViewAdapter extends ArrayAdapter<Note> implements Filterable {
 
-    private Context _context;
+    private Activity _context;
     private List<Note> _notesList;
     private List<Note> _filteredNotes;
     private NoteFilter _noteFilter;
     private Typeface _typeface;
 
-    public NotesListViewAdapter(Context context, int resourceId,
+    public NotesListViewAdapter(Activity context, int resourceId,
                                 List<Note> items) {
         super(context, resourceId, items);
         this._context = context;
@@ -56,6 +56,10 @@ public class NotesListViewAdapter extends ArrayAdapter<Note> implements Filterab
         return i;
     }
 
+    public void setNoteList(ArrayList<Note> newNotes) {
+        _notesList = newNotes;
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder = null;
@@ -68,7 +72,7 @@ public class NotesListViewAdapter extends ArrayAdapter<Note> implements Filterab
             holder = new ViewHolder();
             holder.txtDesc = (TextView) convertView.findViewById(R.id.description);
             holder.txtTitle = (TextView) convertView.findViewById(R.id.title);
-            holder.imageView = (ImageView) convertView.findViewById(R.id.icon);
+            holder.imageView = (ImageView) convertView.findViewById(R.id.image);
             holder.importance = (ImageView) convertView.findViewById(R.id.importance);
             holder.txtDate = (TextView) convertView.findViewById(R.id.date);
             convertView.setTag(holder);
@@ -80,8 +84,7 @@ public class NotesListViewAdapter extends ArrayAdapter<Note> implements Filterab
         holder.importance.setImageResource(note.getImportanceIcon());
         holder.txtDate.setText(new SimpleDateFormat("MM/dd/yyyy HH:mm").format(note.getDate()));
 
-
-        // TODO: find solution for notes images
+        ImageHelper.DrawImage(note.getImagePath(), _context, holder.imageView);
 
         return convertView;
     }

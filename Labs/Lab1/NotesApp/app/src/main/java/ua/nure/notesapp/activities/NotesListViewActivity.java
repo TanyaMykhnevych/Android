@@ -23,8 +23,8 @@ import android.widget.AdapterView.OnItemSelectedListener;
 
 import java.util.Locale;
 
-import ua.nure.notesapp.NotesListViewAdapter;
-import ua.nure.notesapp.NotesStore;
+import ua.nure.notesapp.adapters.NotesListViewAdapter;
+import ua.nure.notesapp.stores.NotesStore;
 import ua.nure.notesapp.R;
 import ua.nure.notesapp.models.Note;
 
@@ -100,14 +100,14 @@ public class NotesListViewActivity extends AppCompatActivity implements SearchVi
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        int listPosition = info.position;
+        Note note =  adapter.getItem(info.position);
 
         if (item.getItemId() == R.id.edit) {
             Intent intent = new Intent(this, NotePreviewActivity.class);
-            intent.putExtra("note_to_edit", _store.get(listPosition));
+            intent.putExtra("note_to_edit", note);
             this.startActivityForResult(intent, REQUEST_CODE_1);
         } else if (item.getItemId() == R.id.delete) {
-            _store.remove(listPosition);
+            _store.remove(note);
             adapter.notifyDataSetChanged();
         } else {
             return false;
@@ -188,7 +188,6 @@ public class NotesListViewActivity extends AppCompatActivity implements SearchVi
         spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                // write filter logic here
             }
 
             public void onNothingSelected(AdapterView<?> arg0) {
