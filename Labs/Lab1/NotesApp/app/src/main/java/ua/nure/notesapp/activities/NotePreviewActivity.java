@@ -13,8 +13,10 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -26,12 +28,10 @@ import ua.nure.notesapp.models.Note;
 public class NotePreviewActivity extends AppCompatActivity {
     private static final int SELECT_PICTURE = 1;
     private Note noteToEdit;
-    Button btnSelectDate;
-    Button btnSelectTime;
-    Button btnSelectImageFromGalery;
-    ImageView vImageDisplay;
-    String currentImagePath;
-    Date noteDateTime = Calendar.getInstance().getTime();
+    private Button btnSelectDate, btnSelectTime, btnSelectImageFromGalery;
+    private ImageView vImageDisplay;
+    private String currentImagePath;
+    private Date noteDateTime = Calendar.getInstance().getTime();
 
 
     public void onCreate(Bundle savedInstanceState) {
@@ -51,6 +51,7 @@ public class NotePreviewActivity extends AppCompatActivity {
 
         fillViewIfEdit();
         prepareSaveButton();
+        updateDateView();
     }
 
     @Override
@@ -183,9 +184,9 @@ public class NotePreviewActivity extends AppCompatActivity {
     private DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-            noteDateTime.setYear(year - 1900);
-            noteDateTime.setMonth(month + 1);
-            noteDateTime.setDate(dayOfMonth);
+            noteDateTime.setYear(view.getYear() - 1900);
+            noteDateTime.setMonth(view.getMonth());
+            noteDateTime.setDate(view.getDayOfMonth());
 
             updateDateView();
         }
@@ -202,6 +203,6 @@ public class NotePreviewActivity extends AppCompatActivity {
     };
 
     private void updateDateView() {
-
+        ((TextView) findViewById(R.id.dateNoteEdit)).setText(new SimpleDateFormat("MM/dd/yyyy HH:mm").format(noteDateTime));
     }
 }

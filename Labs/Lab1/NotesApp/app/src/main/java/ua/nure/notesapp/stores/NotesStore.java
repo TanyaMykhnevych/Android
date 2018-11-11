@@ -17,35 +17,21 @@ public class NotesStore {
     }
 
     public void fillTestData() {
-        _notes.add(new Note("Test Title 1", "Test Description 1", Importance.LOW, new Date(), ""));
-        _notes.add(new Note("Test Title 2", "Test Description 2", Importance.LOW, new Date(), ""));
-        _notes.add(new Note("Test Title 3", "Test Description 3", Importance.NORMAL, new Date(), ""));
-        _notes.add(new Note("Test Title 4", "Test Description 4", Importance.NORMAL, new Date(), ""));
-        _notes.add(new Note("Test Title 5", "Test Description 5", Importance.HIGH, new Date(), ""));
-        _notes.add(new Note("Test Title 6", "Test Description 6", Importance.HIGH, new Date(), ""));
+        _notes.add(new Note("Title 1", "Description 1", Importance.LOW, new Date(), ""));
+        _notes.add(new Note("Title 2", "Description 2", Importance.LOW, new Date(), ""));
+        _notes.add(new Note("Note 3", "Test Description 3", Importance.NORMAL, new Date(), ""));
+        _notes.add(new Note("Test Note 4", "Note Description 4", Importance.NORMAL, new Date(), ""));
+        _notes.add(new Note("This is title", "Note 5", Importance.HIGH, new Date(), ""));
+        _notes.add(new Note("Note title", "This is Description 6", Importance.HIGH, new Date(), ""));
     }
 
     public List<Note> getNotes() {
         return _notes;
     }
 
-    public Note get(int position) {
-        return _notes.get(position);
-    }
-
     public void add(Note note) {
         _notes.add(note);
     }
-
-//    public void replace(Note note) {
-//        UUID noteId = note.getId();
-//        Note noteFromList = findById(noteId);
-//        int index = _notes.indexOf(noteFromList);
-//
-//        if (index > -1) {
-//            _notes.set(index, note);
-//        }
-//    }
 
     public void update(Note note) {
         UUID noteId = note.getId();
@@ -58,10 +44,6 @@ public class NotesStore {
             existingNote.setImportance(note.getImportance());
             existingNote.setImagePath(note.getImagePath());
         }
-    }
-
-    public void remove(int position) {
-        _notes.remove(position);
     }
 
     public void remove(Note note) {

@@ -8,9 +8,9 @@
     android:weightSum="10">
 
     <ImageView
-        android:id="@+id/importance"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:id="@+id/image"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:contentDescription="@string/image"
         android:layout_weight="1"
         android:layout_gravity="center"/>
@@ -58,11 +58,12 @@
             android:layout_gravity="center"/>
 
         <ImageView
-            android:id="@+id/image"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/note"
+            android:id="@+id/importance"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:contentDescription="@string/image"
             android:layout_gravity="center"/>
+
     </LinearLayout>
 
 

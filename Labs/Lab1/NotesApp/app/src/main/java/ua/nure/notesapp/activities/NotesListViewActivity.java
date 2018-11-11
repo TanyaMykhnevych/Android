@@ -21,7 +21,6 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 
-import java.util.Collection;
 import java.util.Locale;
 
 import ua.nure.notesapp.adapters.NotesListViewAdapter;
@@ -102,7 +101,7 @@ public class NotesListViewActivity extends AppCompatActivity implements SearchVi
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        Note note =  adapter.getItem(info.position);
+        Note note = adapter.getItem(info.position);
 
         if (item.getItemId() == R.id.edit) {
             Intent intent = new Intent(this, NotePreviewActivity.class);
@@ -189,7 +188,7 @@ public class NotesListViewActivity extends AppCompatActivity implements SearchVi
         spinner.setAdapter(adapter);
 
         int initialPosition;
-        if(_importanceFilter == null) {
+        if (_importanceFilter == null) {
             initialPosition = 0;
         } else {
             initialPosition = _importanceFilter.getValue() + 1;
@@ -209,7 +208,7 @@ public class NotesListViewActivity extends AppCompatActivity implements SearchVi
                     _importanceFilter = Importance.HIGH;
                 }
 
-                NotesListViewAdapter listViewAdapter = (NotesListViewAdapter)listView.getAdapter();
+                NotesListViewAdapter listViewAdapter = (NotesListViewAdapter) listView.getAdapter();
                 listViewAdapter.updateImportanceFilter(_importanceFilter);
 
                 refreshNoteListWithFilters();
@@ -241,6 +240,5 @@ public class NotesListViewActivity extends AppCompatActivity implements SearchVi
     private void refreshNoteListWithFilters() {
         adapter.getFilter().filter(getSearchString());
     }
-
 }
 

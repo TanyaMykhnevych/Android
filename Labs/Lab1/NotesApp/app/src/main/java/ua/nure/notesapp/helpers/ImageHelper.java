@@ -22,7 +22,6 @@ public class ImageHelper {
             final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
             vImageDisplay.setImageBitmap(selectedImage);
         } catch (Exception e) {
-            e.printStackTrace();
             vImageDisplay.setImageResource(R.drawable.note);
         }
     }

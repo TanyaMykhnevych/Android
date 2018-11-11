@@ -34,11 +34,6 @@ public class NotesListViewAdapter extends ArrayAdapter<Note> implements Filterab
         getFilter();
     }
 
-    public void updateNotesList(List<Note> notes) {
-        _notesList = notes;
-        notifyDataSetChanged();
-    }
-
     public void updateImportanceFilter(Importance importance) {
         _importanceFilterCriteria = importance;
     }
@@ -64,10 +59,6 @@ public class NotesListViewAdapter extends ArrayAdapter<Note> implements Filterab
     @Override
     public long getItemId(int i) {
         return i;
-    }
-
-    public void setNoteList(ArrayList<Note> newNotes) {
-        _notesList = newNotes;
     }
 
     @Override
