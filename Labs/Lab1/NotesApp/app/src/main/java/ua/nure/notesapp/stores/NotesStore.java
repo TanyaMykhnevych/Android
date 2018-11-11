@@ -1,6 +1,7 @@
 package ua.nure.notesapp.stores;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -9,80 +10,102 @@ import ua.nure.notesapp.models.Note;
 
 public class NotesStore {
 
-    private List<Note> _notes;
+    private final List<Note> _notes = new ArrayList<Note>();
 
     public NotesStore() {
-        _notes = new ArrayList<Note>();
+        fillTestData();
+    }
+
+    public void fillTestData() {
+        _notes.add(new Note("Test Title 1", "Test Description 1", Importance.LOW, new Date(), ""));
+        _notes.add(new Note("Test Title 2", "Test Description 2", Importance.LOW, new Date(), ""));
+        _notes.add(new Note("Test Title 3", "Test Description 3", Importance.NORMAL, new Date(), ""));
+        _notes.add(new Note("Test Title 4", "Test Description 4", Importance.NORMAL, new Date(), ""));
+        _notes.add(new Note("Test Title 5", "Test Description 5", Importance.HIGH, new Date(), ""));
+        _notes.add(new Note("Test Title 6", "Test Description 6", Importance.HIGH, new Date(), ""));
     }
 
     public List<Note> getNotes() {
         return _notes;
     }
 
-    public void remove(Note note) {
-        _notes.remove(note);
-    }
-
-    public void update(Note note) {
-        int index = _notes.indexOf(findById(note.getId()));
-
-        if (index > -1) {
-            _notes.set(index, note);
-        }
-    }
-
-    public Integer getTotalCount() {
-        return _notes.size();
-    }
-
-    public void clear() {
-        _notes.clear();
-    }
-
-    public List<Note> getByImportance(Importance importance) {
-        List<Note> filteredList = new ArrayList<Note>();
-        for (Note note : _notes) {
-            if (note.getImportance().equals(importance)) {
-                filteredList.add(note);
-            }
-        }
-        return filteredList;
-    }
-
-    public List<Note> getByDescription(String description) {
-        List<Note> filteredList = new ArrayList<Note>();
-        for (Note note : _notes) {
-            if (note.getDescription().contains(description)) {
-                filteredList.add(note);
-            }
-        }
-        return filteredList;
-    }
-
     public Note get(int position) {
         return _notes.get(position);
     }
-
-    public void remove(int position) {
-        _notes.remove(position);
-    }
-
 
     public void add(Note note) {
         _notes.add(note);
     }
 
+//    public void replace(Note note) {
+//        UUID noteId = note.getId();
+//        Note noteFromList = findById(noteId);
+//        int index = _notes.indexOf(noteFromList);
+//
+//        if (index > -1) {
+//            _notes.set(index, note);
+//        }
+//    }
 
-    public void addOrUpdate(Note note) {
-        Note existingNote = findById(note.getId());
+    public void update(Note note) {
+        UUID noteId = note.getId();
+        Note existingNote = findById(noteId);
+
         if (existingNote != null) {
             existingNote.setTitle(note.getTitle());
             existingNote.setDescription(note.getDescription());
             existingNote.setDate(note.getDate());
             existingNote.setImportance(note.getImportance());
             existingNote.setImagePath(note.getImagePath());
+        }
+    }
+
+    public void remove(int position) {
+        _notes.remove(position);
+    }
+
+//    public void remove(Note note) {
+//        UUID noteId = note.getId();
+//        Note noteFromList = findById(noteId);
+//
+//        _notes.remove(noteFromList);
+//    }
+//
+//    public Integer getTotalCount() {
+//        return _notes.size();
+//    }
+//
+//    public void clear() {
+//        _notes.clear();
+//    }
+
+//    public List<Note> getByImportance(Importance importance) {
+//        List<Note> filteredList = new ArrayList<>();
+//        for (Note note : _notes) {
+//            if (note.getImportance().equals(importance)) {
+//                filteredList.add(note);
+//            }
+//        }
+//        return filteredList;
+//    }
+//
+//    public List<Note> getByDescription(String description) {
+//        List<Note> filteredList = new ArrayList<>();
+//        for (Note note : _notes) {
+//            if (note.getDescription().contains(description)) {
+//                filteredList.add(note);
+//            }
+//        }
+//        return filteredList;
+//    }
+
+
+    public void addOrUpdate(Note note) {
+        Note existingNote = findById(note.getId());
+        if (existingNote != null) {
+            update(note);
         } else {
-            _notes.add(note);
+            add(note);
         }
     }
 
