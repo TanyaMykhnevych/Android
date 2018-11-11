@@ -1,6 +1,7 @@
 package ua.nure.notesapp.models;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
@@ -20,7 +21,7 @@ public class Note implements Serializable {
         title = "";
         description = "";
         importance = Importance.LOW;
-        date = new Date();
+        date = Calendar.getInstance().getTime();
         imagePath = "";
     }
 
