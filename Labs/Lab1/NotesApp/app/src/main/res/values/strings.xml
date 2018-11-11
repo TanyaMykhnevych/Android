@@ -18,6 +18,8 @@
     <string name="choose_language_message">You have selected English</string>
     <string name="importance">Importance</string>
     <string name="change_image_btn_text">Change image</string>
+    <string name="change_date_btn_text">Set date</string>
+    <string name="change_time_btn_text">Set time</string>
 
     <string-array name="languages">
         <item>Language</item>

@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/notePreviewView"
     tools:context="ua.nure.notesapp.activities.NotePreviewActivity">
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -47,19 +48,27 @@
             android:layout_gravity="center">
         </Spinner>
 
-        <DatePicker
-            android:id="@+id/date_picker"
-            android:layout_marginTop="20dp"
-            android:layout_width="fill_parent"
-            android:calendarViewShown="true"
-            android:spinnersShown="false"
-            android:layout_height="wrap_content"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-        <TimePicker
-            android:id="@+id/time_picker"
-            android:layout_marginTop="10dp"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
+            <Button
+                android:id="@+id/btnSelectDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/change_date_btn_text" />
+            <Button
+                android:id="@+id/btnSelectTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/change_time_btn_text" />
+
+        </LinearLayout>
+
+
 
         <LinearLayout
             android:layout_width="match_parent"

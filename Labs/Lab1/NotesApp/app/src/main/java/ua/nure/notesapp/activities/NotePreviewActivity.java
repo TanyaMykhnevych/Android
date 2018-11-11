@@ -1,5 +1,7 @@
 package ua.nure.notesapp.activities;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,11 +15,8 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TimePicker;
 
-import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
 
 import ua.nure.notesapp.R;
 import ua.nure.notesapp.helpers.ImageHelper;
@@ -27,9 +26,13 @@ import ua.nure.notesapp.models.Note;
 public class NotePreviewActivity extends AppCompatActivity {
     private static final int SELECT_PICTURE = 1;
     private Note noteToEdit;
+    Button btnSelectDate;
+    Button btnSelectTime;
     Button btnSelectImageFromGalery;
     ImageView vImageDisplay;
     String currentImagePath;
+    Date noteDateTime = Calendar.getInstance().getTime();
+
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,13 +41,16 @@ public class NotePreviewActivity extends AppCompatActivity {
         btnSelectImageFromGalery = (Button) findViewById(R.id.btnSelectImageFromGalery);
         btnSelectImageFromGalery.setOnClickListener(btnSelectImageFromGaleryListener);
 
+        btnSelectDate = (Button) findViewById(R.id.btnSelectDate);
+        btnSelectDate.setOnClickListener(btnSelectDateListener);
+
+        btnSelectTime = (Button) findViewById(R.id.btnSelectTime);
+        btnSelectTime.setOnClickListener(btnSelectTimeListener);
+
         vImageDisplay = (ImageView) findViewById(R.id.imageViewEditForm);
 
         fillViewIfEdit();
         prepareSaveButton();
-
-        Calendar c = Calendar.getInstance();
-        ((DatePicker) findViewById(R.id.date_picker)).setMinDate(c.getTimeInMillis());
     }
 
     @Override
@@ -100,14 +106,15 @@ public class NotePreviewActivity extends AppCompatActivity {
         return note;
     }
 
+    private void setDateTime(Note note) {
+        note.setDate(noteDateTime);
+    }
+
     private void setViewValuesFromNote(Note note) {
         ((EditText) findViewById(R.id.NoteTitle)).setText(note.getTitle());
         ((EditText) findViewById(R.id.NoteDescription)).setText(note.getDescription());
         ((Spinner) findViewById(R.id.NoteImportance)).setSelection(note.getImportance().getValue());
-        Date noteDate = note.getDate();
-        ((DatePicker) findViewById(R.id.date_picker)).updateDate(noteDate.getYear(), noteDate.getMonth(), noteDate.getDay());
-        ((TimePicker) findViewById(R.id.time_picker)).setCurrentHour(noteDate.getHours());
-        ((TimePicker) findViewById(R.id.time_picker)).setCurrentMinute(noteDate.getMinutes());
+        noteDateTime = note.getDate();
         ImageHelper.DrawImage(note.getImagePath(), this, vImageDisplay);
         currentImagePath = note.getImagePath();
     }
@@ -143,19 +150,6 @@ public class NotePreviewActivity extends AppCompatActivity {
         }
     }
 
-    private void setDateTime(Note note) {
-        DatePicker datePicker = (DatePicker) findViewById(R.id.date_picker);
-        TimePicker timePicker = (TimePicker) findViewById(R.id.time_picker);
-
-        Calendar calendar = new GregorianCalendar(datePicker.getYear(),
-                datePicker.getMonth(),
-                datePicker.getDayOfMonth(),
-                timePicker.getCurrentHour(),
-                timePicker.getCurrentMinute());
-
-        note.setDate(calendar.getTime());
-    }
-
     private View.OnClickListener btnSelectImageFromGaleryListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -166,4 +160,48 @@ public class NotePreviewActivity extends AppCompatActivity {
                     "Select Picture"), SELECT_PICTURE);
         }
     };
+
+    private View.OnClickListener btnSelectDateListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            new DatePickerDialog(NotePreviewActivity.this, onDateSetListener,
+                    noteDateTime.getYear() + 1900, noteDateTime.getMonth(), noteDateTime.getDate())
+                    .show();
+        }
+    };
+
+    private View.OnClickListener btnSelectTimeListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            new TimePickerDialog(NotePreviewActivity.this, onTimeSetListener,
+                    noteDateTime.getHours(),
+                    noteDateTime.getMinutes(), true)
+                    .show();
+        }
+    };
+
+    private DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
+        @Override
+        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+            noteDateTime.setYear(year - 1900);
+            noteDateTime.setMonth(month + 1);
+            noteDateTime.setDate(dayOfMonth);
+
+            updateDateView();
+        }
+    };
+
+    private TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+        @Override
+        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+            noteDateTime.setHours(hourOfDay);
+            noteDateTime.setMinutes(minute);
+
+            updateDateView();
+        }
+    };
+
+    private void updateDateView() {
+
+    }
 }
