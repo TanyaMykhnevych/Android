@@ -21,11 +21,13 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 
+import java.util.Collection;
 import java.util.Locale;
 
 import ua.nure.notesapp.NotesListViewAdapter;
 import ua.nure.notesapp.NotesStore;
 import ua.nure.notesapp.R;
+import ua.nure.notesapp.models.Importance;
 import ua.nure.notesapp.models.Note;
 
 public class NotesListViewActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
@@ -37,6 +39,7 @@ public class NotesListViewActivity extends AppCompatActivity implements SearchVi
     NotesListViewAdapter adapter;
     Menu optionsMenu;
     String locale = "en";
+    Importance _importanceFilter = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -180,14 +183,26 @@ public class NotesListViewActivity extends AppCompatActivity implements SearchVi
         MenuItem item = optionsMenu.findItem(R.id.importanceSpinner);
         Spinner spinner = (Spinner) item.getActionView();
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+        final ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.importance, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                // write filter logic here
+                if (pos == 0) {
+                    _importanceFilter = null;
+                } else if (pos == 1) {
+                    _importanceFilter = Importance.LOW;
+                } else if (pos == 2) {
+                    _importanceFilter = Importance.NORMAL;
+                } else if (pos == 3) {
+                    _importanceFilter = Importance.HIGH;
+                }
+
+                NotesListViewAdapter listViewAdapter = (NotesListViewAdapter)listView.getAdapter();
+                listViewAdapter.updateImportanceFilter(_importanceFilter);
+                listViewAdapter.getFilter().filter(getSearchString());
             }
 
             public void onNothingSelected(AdapterView<?> arg0) {
@@ -205,6 +220,12 @@ public class NotesListViewActivity extends AppCompatActivity implements SearchVi
                 getSearchableInfo(getComponentName()));
         searchView.setSubmitButtonEnabled(false);
         searchView.setOnQueryTextListener(this);
+    }
+
+    private String getSearchString() {
+        MenuItem searchMenuItem = optionsMenu.findItem(R.id.app_bar_search);
+        SearchView searchView = (SearchView) searchMenuItem.getActionView();
+        return searchView.getQuery().toString();
     }
 
 }

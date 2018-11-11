@@ -1,6 +1,7 @@
 package ua.nure.notesapp;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -10,6 +11,19 @@ import ua.nure.notesapp.models.Note;
 public class NotesStore {
 
     private final List<Note> _notes = new ArrayList<Note>();
+
+    public NotesStore() {
+        fillTestData();
+    }
+
+    public void fillTestData() {
+        _notes.add(new Note("Test Title 1", "Test Description 1", Importance.LOW, new Date(), ""));
+        _notes.add(new Note("Test Title 2", "Test Description 2", Importance.LOW, new Date(), ""));
+        _notes.add(new Note("Test Title 3", "Test Description 3", Importance.NORMAL, new Date(), ""));
+        _notes.add(new Note("Test Title 4", "Test Description 4", Importance.NORMAL, new Date(), ""));
+        _notes.add(new Note("Test Title 5", "Test Description 5", Importance.HIGH, new Date(), ""));
+        _notes.add(new Note("Test Title 6", "Test Description 6", Importance.HIGH, new Date(), ""));
+    }
 
     public List<Note> getNotes() {
         return _notes;

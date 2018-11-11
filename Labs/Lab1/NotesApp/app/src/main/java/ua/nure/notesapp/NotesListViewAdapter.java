@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import ua.nure.notesapp.models.Importance;
 import ua.nure.notesapp.models.Note;
 
 public class NotesListViewAdapter extends ArrayAdapter<Note> implements Filterable {
@@ -21,6 +22,7 @@ public class NotesListViewAdapter extends ArrayAdapter<Note> implements Filterab
     private List<Note> _notesList;
     private List<Note> _filteredNotes;
     private NoteFilter _noteFilter;
+    private Importance _importanceFilterCriteria;
 
     public NotesListViewAdapter(Context context, int resourceId,
                                 List<Note> items) {
@@ -30,6 +32,15 @@ public class NotesListViewAdapter extends ArrayAdapter<Note> implements Filterab
         this._filteredNotes = items;
 
         getFilter();
+    }
+
+    public void updateNotesList(List<Note> notes) {
+        _notesList = notes;
+        notifyDataSetChanged();
+    }
+
+    public void updateImportanceFilter(Importance importance) {
+        _importanceFilterCriteria = importance;
     }
 
     private class ViewHolder {
@@ -57,13 +68,20 @@ public class NotesListViewAdapter extends ArrayAdapter<Note> implements Filterab
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
-        ViewHolder holder;
+        ViewHolder holder = null;
         Note note = getItem(position);
 
+        LayoutInflater mInflater = (LayoutInflater) _context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+
         if (convertView == null) {
+            convertView = mInflater.inflate(R.layout.note, null);
             holder = new ViewHolder();
-            convertView = initViews(holder);
+            holder.txtDesc = (TextView) convertView.findViewById(R.id.description);
+            holder.txtTitle = (TextView) convertView.findViewById(R.id.title);
+            holder.imageView = (ImageView) convertView.findViewById(R.id.icon);
+            holder.importance = (ImageView) convertView.findViewById(R.id.importance);
+            holder.txtDate = (TextView) convertView.findViewById(R.id.date);
+            convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
@@ -82,26 +100,6 @@ public class NotesListViewAdapter extends ArrayAdapter<Note> implements Filterab
         // TODO: find solution for notes images
     }
 
-    private View initViews(ViewHolder viewHolder) {
-        LayoutInflater mInflater = (LayoutInflater) _context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-
-        View convertView = mInflater.inflate(R.layout.note, null);
-        ViewHolder holder = initViewHolder(convertView);
-        convertView.setTag(holder);
-        return convertView;
-    }
-
-    private ViewHolder initViewHolder(View convertView) {
-        ViewHolder holder = new ViewHolder();
-        holder.txtDesc = convertView.findViewById(R.id.description);
-        holder.txtTitle = convertView.findViewById(R.id.title);
-        holder.imageView = convertView.findViewById(R.id.icon);
-        holder.importance = convertView.findViewById(R.id.importance);
-        holder.txtDate = convertView.findViewById(R.id.date);
-        return holder;
-    }
-
-
     @Override
     public Filter getFilter() {
         if (_noteFilter == null) {
@@ -116,14 +114,21 @@ public class NotesListViewAdapter extends ArrayAdapter<Note> implements Filterab
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             FilterResults filterResults = new FilterResults();
-            if (constraint != null && constraint.length() > 0) {
+
+            Boolean stringConstraintPresented = constraint != null && constraint.length() > 0;
+            Boolean importanceConstraintPresented = _importanceFilterCriteria != null;
+            if (stringConstraintPresented || importanceConstraintPresented) {
                 List<Note> tempList = new ArrayList<>();
 
                 for (Note note : _notesList) {
                     String constraintLowerCase = constraint.toString().toLowerCase();
                     String noteDescription = note.getDescription().toLowerCase();
                     String noteTitle = note.getTitle().toLowerCase();
-                    if (noteDescription.contains(constraintLowerCase) || noteTitle.contains(constraintLowerCase)) {
+                    Boolean passedStringConstraint = !stringConstraintPresented
+                            || noteDescription.contains(constraintLowerCase)
+                            || noteTitle.contains(constraintLowerCase);
+                    Boolean passedImportanceConstraint = !importanceConstraintPresented || note.getImportance() == _importanceFilterCriteria;
+                    if (passedStringConstraint && passedImportanceConstraint) {
                         tempList.add(note);
                     }
                 }
