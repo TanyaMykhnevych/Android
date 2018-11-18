@@ -14,17 +14,17 @@ import ua.nure.notesapp.models.Importance;
 import ua.nure.notesapp.models.Note;
 
 public class NotesStore {
-    String dateFormat = "MM/dd/yyyy HH:mm";
-    NotesDbHelper dbHelper;
-    SQLiteDatabase db;
+    private String dateFormat = "MM/dd/yyyy HH:mm";
+    private NotesDbHelper _dbHelper;
+    private SQLiteDatabase _db;
 
     public NotesStore(NotesDbHelper dbHelper) {
-        this.dbHelper = dbHelper;
-        db = dbHelper.getWritableDatabase();
+        this._dbHelper = dbHelper;
+        _db = dbHelper.getWritableDatabase();
     }
 
     public ArrayList<Note> getAll() {
-        Cursor c = db.query("notes", null, null, null, null, null, null);
+        Cursor c = _db.query("notes", null, null, null, null, null, null);
         ArrayList<Note> result = new ArrayList<>();
 
         if (c.moveToFirst()) {
@@ -54,7 +54,7 @@ public class NotesStore {
             query += "(title like '%" + searchText + "%' or description like '%" + searchText + "%')";
         }
 
-        Cursor c = db.query("notes", null, query, null, null, null, null);
+        Cursor c = _db.query("notes", null, query, null, null, null, null);
         ArrayList<Note> result = new ArrayList<>();
 
         if (c.moveToFirst()) {
@@ -69,7 +69,7 @@ public class NotesStore {
     }
 
     public Note getById(int id) {
-        Cursor c = db.query("notes", null, "id = ?", new String[]{String.valueOf(id)}, null, null, null);
+        Cursor c = _db.query("notes", null, "id = ?", new String[]{String.valueOf(id)}, null, null, null);
         Note note = null;
 
         if (c.moveToFirst()) {
@@ -82,18 +82,18 @@ public class NotesStore {
 
     public void update(Note note) {
         ContentValues cv = getContentValuesByNote(note);
-        int updCount = db.update("notes", cv, "id = ?",
+        int updCount = _db.update("notes", cv, "id = ?",
                 new String[]{String.valueOf(note.getId())});
     }
 
     public void add(Note note) {
         ContentValues cv = getContentValuesByNote(note);
-        long rowID = db.insert("notes", null, cv);
+        long rowID = _db.insert("notes", null, cv);
         note.setId((int) rowID);
     }
 
     public void delete(int id) {
-        int delCount = db.delete("notes", "id = ?", new String[]{String.valueOf(id)});
+        int delCount = _db.delete("notes", "id = ?", new String[]{String.valueOf(id)});
     }
 
     private ContentValues getContentValuesByNote(Note note) {
