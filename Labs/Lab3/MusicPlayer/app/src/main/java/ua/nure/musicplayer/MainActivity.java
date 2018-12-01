@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
@@ -32,7 +31,7 @@ import ua.nure.musicplayer.services.AudioPlayerService;
 import ua.nure.musicplayer.utils.ProgressUtils;
 import ua.nure.musicplayer.utils.StorageUtil;
 
-public class MainActivity extends AppCompatActivity implements MediaPlayer.OnCompletionListener, SeekBar.OnSeekBarChangeListener {
+public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener {
     private static final int MY_PERMISSION_REQUEST = 1;
     public static final String BROADCAST_PLAY_NEW_AUDIO = "ua.nure.musicplayer.PlayNewAudio";
     public static final String BROADCAST_PAUSE_AUDIO = "ua.nure.musicplayer.PauseAudio";
@@ -46,9 +45,8 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnCom
     private boolean _isPaused = true;
     private boolean _shuffleAudio = false;
     private boolean _repeatAudio = false;
-    // Handler to update UI timer, progress bar etc,.
+    private int _repeatAudioCount = 0;
     private Handler _mHandler = new Handler();
-    ;
 
     private ListView _listView;
     private PlayListAdapter _adapter;
@@ -112,11 +110,6 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnCom
     }
 
     @Override
-    public void onCompletion(MediaPlayer mp) {
-        playNextAudio();
-    }
-
-    @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromTouch) {
     }
 
@@ -131,11 +124,14 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnCom
         int totalDuration = _player.getCurrentAudioDuration();
         int currentPosition = ProgressUtils.progressToTimer(seekBar.getProgress(), totalDuration);
 
-        _player.seekTo(currentPosition);
+        if (currentPosition > totalDuration - 500) {
+            playNextAudio();
+            return;
+        }
 
+        _player.seekTo(currentPosition);
         updateProgressBar();
     }
-
 
     @Override
     protected void onDestroy() {
@@ -295,6 +291,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnCom
             @Override
             public void onClick(View v) {
                 _repeatAudio = !_repeatAudio;
+                _repeatAudioCount = 0;
                 if (_repeatAudio) {
                     _repeatBtn.setImageTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorChosen));
                 } else {
@@ -326,19 +323,24 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnCom
     }
 
     private void playNextAudio() {
-        if (!_shuffleAudio) {
-            _currentTrackPosition = _currentTrackPosition == _audioList.size() - 1 ?
-                    0 :
-                    _currentTrackPosition + 1;
+        _progressBar.setProgress(0);
+        if (_repeatAudio && _repeatAudioCount < 1) {
+            _repeatAudioCount++;
         } else {
-            Random random = new Random();
+            _repeatAudioCount = 0;
+            if (!_shuffleAudio) {
+                _currentTrackPosition = _currentTrackPosition == _audioList.size() - 1 ?
+                        0 :
+                        _currentTrackPosition + 1;
+            } else {
+                Random random = new Random();
+                int nextPos = random.nextInt(_audioList.size());
+                while (nextPos == _currentTrackPosition) {
+                    nextPos = random.nextInt(_audioList.size());
+                }
 
-            int nextPos = random.nextInt(_audioList.size());
-            while (nextPos == _currentTrackPosition) {
-                nextPos = random.nextInt(_audioList.size());
+                _currentTrackPosition = nextPos;
             }
-
-            _currentTrackPosition = nextPos;
         }
 
         _currentTrack = _audioList.get(_currentTrackPosition);
@@ -348,13 +350,17 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnCom
 
     private Runnable mUpdateTimeTask = new Runnable() {
         public void run() {
-            long totalDuration = _player.getCurrentAudioDuration();
-            long currentDuration = _player.getCurrentAudioPosition();
+            long totalDuration = _player == null ? 0 : _player.getCurrentAudioDuration();
+            long currentDuration = _player == null ? 0 : _player.getCurrentAudioPosition();
 
-            if (currentDuration > totalDuration) {
+            if (currentDuration > totalDuration - 100) {
                 currentDuration = totalDuration;
             }
 
+            if (currentDuration == totalDuration) {
+                playNextAudio();
+                return;
+            }
             _audioTime.setText(ProgressUtils.milliSecondsToTimer(currentDuration) +
                     " / " +
                     ProgressUtils.milliSecondsToTimer(totalDuration));
