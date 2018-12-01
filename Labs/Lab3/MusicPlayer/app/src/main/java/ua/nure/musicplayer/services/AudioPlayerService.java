@@ -69,7 +69,6 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnComplet
     public void onCreate() {
         super.onCreate();
         callStateListener();
-        registerBecomingNoisyReceiver();
         registerPlayNewAudio();
         registerPauseAudio();
         registerResumeAudio();
@@ -210,6 +209,10 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnComplet
         return _mediaPlayer.getDuration();
     }
 
+    public void seekTo(int position) {
+        _mediaPlayer.seekTo(position);
+    }
+
     private void initMediaPlayer() {
         if (_mediaPlayer == null)
             _mediaPlayer = new MediaPlayer();
@@ -303,20 +306,6 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnComplet
     private boolean removeAudioFocus() {
         return AudioManager.AUDIOFOCUS_REQUEST_GRANTED ==
                 _audioManager.abandonAudioFocus(this);
-    }
-
-
-    private BroadcastReceiver becomingNoisyReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            pauseMedia();
-            buildNotification(PlaybackStatus.PAUSED);
-        }
-    };
-
-    private void registerBecomingNoisyReceiver() {
-        IntentFilter intentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-        registerReceiver(becomingNoisyReceiver, intentFilter);
     }
 
     private void buildNotification(PlaybackStatus playbackStatus) {

@@ -4,13 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:weightSum="4"
+    android:weightSum="10"
     tools:context=".MainActivity">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3"
+        android:layout_weight="7"
         android:orientation="vertical">
 
         <ListView
@@ -23,11 +23,10 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight="3"
         android:background="@color/colorPrimaryDark"
         android:orientation="vertical"
         android:weightSum="3">
-
 
         <TextView
             android:id="@+id/audioTitle"
@@ -41,17 +40,32 @@
             android:textSize="18sp"
             android:textStyle="bold|italic" />
 
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.7"
+            android:orientation="horizontal"
+            android:weightSum="5">
         <SeekBar
             android:id="@+id/audioProgressBar"
-            android:layout_width="fill_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.3" />
+            android:layout_weight="4" />
+
+            <TextView
+                android:id="@+id/audioTime"
+                android:layout_width="0dp"
+                android:textColor="@color/colorAccent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+        </LinearLayout>
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginBottom="5dp"
-            android:layout_weight="1.5"
+            android:layout_weight="1"
             android:orientation="horizontal"
             android:weightSum="5">
 

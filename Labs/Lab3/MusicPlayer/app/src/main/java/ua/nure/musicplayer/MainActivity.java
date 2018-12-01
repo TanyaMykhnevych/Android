@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Handler;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -27,9 +29,10 @@ import java.util.Random;
 import ua.nure.musicplayer.adapters.PlayListAdapter;
 import ua.nure.musicplayer.models.Audio;
 import ua.nure.musicplayer.services.AudioPlayerService;
+import ua.nure.musicplayer.utils.ProgressUtils;
 import ua.nure.musicplayer.utils.StorageUtil;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MediaPlayer.OnCompletionListener, SeekBar.OnSeekBarChangeListener {
     private static final int MY_PERMISSION_REQUEST = 1;
     public static final String BROADCAST_PLAY_NEW_AUDIO = "ua.nure.musicplayer.PlayNewAudio";
     public static final String BROADCAST_PAUSE_AUDIO = "ua.nure.musicplayer.PauseAudio";
@@ -43,10 +46,14 @@ public class MainActivity extends AppCompatActivity {
     private boolean _isPaused = true;
     private boolean _shuffleAudio = false;
     private boolean _repeatAudio = false;
+    // Handler to update UI timer, progress bar etc,.
+    private Handler _mHandler = new Handler();
+    ;
 
     private ListView _listView;
     private PlayListAdapter _adapter;
     private TextView _currentAudioTitle;
+    private TextView _audioTime;
     private SeekBar _progressBar;
     private ImageButton _shuffleBtn;
     private ImageButton _prevBtn;
@@ -105,6 +112,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onCompletion(MediaPlayer mp) {
+        playNextAudio();
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromTouch) {
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+        _mHandler.removeCallbacks(mUpdateTimeTask);
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        _mHandler.removeCallbacks(mUpdateTimeTask);
+        int totalDuration = _player.getCurrentAudioDuration();
+        int currentPosition = ProgressUtils.progressToTimer(seekBar.getProgress(), totalDuration);
+
+        _player.seekTo(currentPosition);
+
+        updateProgressBar();
+    }
+
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         if (_serviceBound) {
@@ -135,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
         _nextBtn = ((ImageButton) this.findViewById(R.id.nextBtn));
         _repeatBtn = ((ImageButton) this.findViewById(R.id.repeatBtn));
         _playPauseBtn = ((ImageButton) this.findViewById(R.id.playPauseBtn));
+        _audioTime = ((TextView) this.findViewById(R.id.audioTime));
 
         _adapter = new PlayListAdapter(this, R.layout.playlist_item, _audioList);
         _listView = findViewById(R.id.list);
@@ -150,6 +184,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         _currentAudioTitle.setText("Please, select audio to play");
+        _progressBar.setOnSeekBarChangeListener(this);
         setButtonListeners();
     }
 
@@ -171,6 +206,7 @@ public class MainActivity extends AppCompatActivity {
             sendBroadcast(broadcastIntent);
         }
         processIsPaused();
+        setupProgressBar();
         updateCurrentAudioView();
     }
 
@@ -196,6 +232,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateCurrentAudioView() {
         _currentAudioTitle.setText(_currentTrack.getTitle() + " " + _currentTrack.getArtist());
+        updateProgressBar();
     }
 
     private void setButtonListeners() {
@@ -210,18 +247,7 @@ public class MainActivity extends AppCompatActivity {
         _nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!_shuffleAudio) {
-                    _currentTrackPosition = _currentTrackPosition == _audioList.size() - 1 ?
-                            0 :
-                            _currentTrackPosition + 1;
-                } else {
-                    Random random = new Random();
-                    _currentTrackPosition = random.nextInt(_audioList.size());
-                }
-
-                _currentTrack = _audioList.get(_currentTrackPosition);
-                updateCurrentAudioView();
-                playAudio(_currentTrackPosition);
+                playNextAudio();
             }
         });
     }
@@ -289,4 +315,55 @@ public class MainActivity extends AppCompatActivity {
             sendBroadcast(broadcastIntent);
         }
     }
+
+    private void setupProgressBar() {
+        _progressBar.setProgress(0);
+        _progressBar.setMax(100);
+    }
+
+    private void updateProgressBar() {
+        _mHandler.postDelayed(mUpdateTimeTask, 100);
+    }
+
+    private void playNextAudio() {
+        if (!_shuffleAudio) {
+            _currentTrackPosition = _currentTrackPosition == _audioList.size() - 1 ?
+                    0 :
+                    _currentTrackPosition + 1;
+        } else {
+            Random random = new Random();
+
+            int nextPos = random.nextInt(_audioList.size());
+            while (nextPos == _currentTrackPosition) {
+                nextPos = random.nextInt(_audioList.size());
+            }
+
+            _currentTrackPosition = nextPos;
+        }
+
+        _currentTrack = _audioList.get(_currentTrackPosition);
+        updateCurrentAudioView();
+        playAudio(_currentTrackPosition);
+    }
+
+    private Runnable mUpdateTimeTask = new Runnable() {
+        public void run() {
+            long totalDuration = _player.getCurrentAudioDuration();
+            long currentDuration = _player.getCurrentAudioPosition();
+
+            if (currentDuration > totalDuration) {
+                currentDuration = totalDuration;
+            }
+
+            _audioTime.setText(ProgressUtils.milliSecondsToTimer(currentDuration) +
+                    " / " +
+                    ProgressUtils.milliSecondsToTimer(totalDuration));
+
+            int progress = (int) (ProgressUtils.getProgressPercentage(currentDuration, totalDuration));
+            _progressBar.setProgress(progress);
+
+            // Running this thread after 100 milliseconds
+            _mHandler.postDelayed(this, 100);
+        }
+    };
 }
