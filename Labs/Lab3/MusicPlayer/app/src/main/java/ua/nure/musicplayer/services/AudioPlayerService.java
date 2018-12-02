@@ -1,5 +1,6 @@
 package ua.nure.musicplayer.services;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -159,7 +160,7 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnComplet
             stopSelf();
         }
 
-        if (requestAudioFocus() == false) {
+        if (!requestAudioFocus()) {
             stopSelf();
         }
 
@@ -211,6 +212,7 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnComplet
 
     public void seekTo(int position) {
         _mediaPlayer.seekTo(position);
+        buildNotification(PlaybackStatus.PLAYING);
     }
 
     private void initMediaPlayer() {
@@ -324,26 +326,31 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnComplet
         }
 
         Bitmap largeIcon = BitmapFactory.decodeResource(getResources(),
-                R.drawable.image3);
+                R.drawable.icon);
 
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+        Notification.Builder notificationBuilder = new Notification.Builder(this)
                 .setShowWhen(false)
-                // Set the Notification color
-                .setColor(getResources().getColor(R.color.colorPrimary))
-                // Set the large and small icons
+                .setColor(getResources().getColor(R.color.colorPrimaryDark))
+                .setUsesChronometer(true)
                 .setLargeIcon(largeIcon)
                 .setSmallIcon(android.R.drawable.stat_sys_headset)
-                // Set Notification content information
-                .setContentText(_activeAudio.getArtist())
-                .setContentTitle(_activeAudio.getAlbum())
-                .setContentInfo(_activeAudio.getTitle())
-                // Add playback actions
-                .addAction(android.R.drawable.ic_media_previous, "previous", playbackAction(3))
-                .addAction(notificationAction, "pause", play_pauseAction)
-                .addAction(android.R.drawable.ic_media_next, "next", playbackAction(2));
+                .setContentTitle(_activeAudio.getTitle())
+                .setContentInfo(_activeAudio.getArtist());
+
+        setNotificationPlaybackState(notificationBuilder, playbackStatus);
 
         ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).notify(NOTIFICATION_ID, notificationBuilder.build());
+    }
+
+    private void setNotificationPlaybackState(Notification.Builder builder, PlaybackStatus playbackStatus) {
+        if (playbackStatus == PlaybackStatus.PLAYING) {
+            builder.setWhen(System.currentTimeMillis() - getCurrentAudioPosition()).setShowWhen(true).setUsesChronometer(true);
+        } else {
+            builder.setWhen(0).setShowWhen(true).setUsesChronometer(false);
+        }
+
+        builder.setOngoing(playbackStatus == PlaybackStatus.PLAYING);
     }
 
     private void removeNotification() {
