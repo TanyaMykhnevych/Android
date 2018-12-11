@@ -13,7 +13,7 @@ import ua.nure.musicplayer.models.Audio;
 
 public class StorageUtil {
 
-    private final String STORAGE = " ua.nure.musicplayer.STORAGE";
+    private final String STORAGE = "ua.nure.musicplayer.STORAGE";
     private SharedPreferences preferences;
     private Context context;
 
@@ -50,12 +50,5 @@ public class StorageUtil {
     public int loadAudioIndex() {
         preferences = context.getSharedPreferences(STORAGE, Context.MODE_PRIVATE);
         return preferences.getInt("audioIndex", -1);//return -1 if no data found
-    }
-
-    public void clearCachedAudioPlaylist() {
-        preferences = context.getSharedPreferences(STORAGE, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.clear();
-        editor.commit();
     }
 }

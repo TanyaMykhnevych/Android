@@ -27,6 +27,7 @@ import java.util.Random;
 
 import ua.nure.musicplayer.adapters.PlayListAdapter;
 import ua.nure.musicplayer.models.Audio;
+import ua.nure.musicplayer.models.PlaybackStatus;
 import ua.nure.musicplayer.services.AudioPlayerService;
 import ua.nure.musicplayer.utils.ProgressUtils;
 import ua.nure.musicplayer.utils.StorageUtil;
@@ -80,6 +81,19 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
         initViewElements();
     }
+
+    @Override
+    protected void onPause() {
+       _player.buildNotification(_isPaused ? PlaybackStatus.PAUSED : PlaybackStatus.PLAYING);
+        super.onPause();
+    }
+
+    @Override
+    protected void onRestart() {
+        _player.removeNotification();
+        super.onRestart();
+    }
+
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -357,7 +371,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 currentDuration = totalDuration;
             }
 
-            if (currentDuration == totalDuration) {
+            if (currentDuration == totalDuration && totalDuration != 0) {
                 playNextAudio();
                 return;
             }
