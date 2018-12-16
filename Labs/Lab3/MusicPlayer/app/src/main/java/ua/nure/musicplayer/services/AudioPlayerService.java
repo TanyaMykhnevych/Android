@@ -24,16 +24,13 @@ import android.util.Log;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import ua.nure.musicplayer.MainActivity;
 import ua.nure.musicplayer.R;
 import ua.nure.musicplayer.models.Audio;
 import ua.nure.musicplayer.models.PlaybackStatus;
 import ua.nure.musicplayer.utils.StorageUtil;
 
 public class AudioPlayerService extends Service implements MediaPlayer.OnCompletionListener,
-        MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnSeekCompleteListener,
-        MediaPlayer.OnInfoListener, MediaPlayer.OnBufferingUpdateListener,
-        AudioManager.OnAudioFocusChangeListener {
+        MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, AudioManager.OnAudioFocusChangeListener {
 
     private final IBinder _iBinder = new LocalBinder();
     private MediaPlayer _mediaPlayer;
@@ -51,6 +48,10 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnComplet
     private PhoneStateListener _phoneStateListener;
     private TelephonyManager _telephonyManager;
 
+    public static final String BROADCAST_GET_NEXT_AUDIO = "ua.nure.musicplayer.GetNextAudio";
+    public static final String BROADCAST_PLAY_NEW_AUDIO = "ua.nure.musicplayer.PlayNewAudio";
+    public static final String BROADCAST_PAUSE_AUDIO = "ua.nure.musicplayer.PauseAudio";
+    public static final String BROADCAST_RESUME_AUDIO = "ua.nure.musicplayer.ResumeAudio";
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -67,13 +68,11 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
     @Override
-    public void onBufferingUpdate(MediaPlayer mp, int percent) {
-    }
-
-    @Override
     public void onCompletion(MediaPlayer mp) {
         stopMedia();
         stopSelf();
+        Intent broadcastIntent = new Intent(BROADCAST_GET_NEXT_AUDIO);
+        sendBroadcast(broadcastIntent);
     }
 
     @Override
@@ -89,21 +88,12 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnComplet
                 Log.d("MediaPlayer Error", "MEDIA ERROR UNKNOWN " + extra);
                 break;
         }
-        return false;
-    }
-
-    @Override
-    public boolean onInfo(MediaPlayer mp, int what, int extra) {
-        return false;
+        return true;
     }
 
     @Override
     public void onPrepared(MediaPlayer mp) {
         playMedia();
-    }
-
-    @Override
-    public void onSeekComplete(MediaPlayer mp) {
     }
 
     @Override
@@ -199,15 +189,11 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
     private void initMediaPlayer() {
-        if (_mediaPlayer == null)
-            _mediaPlayer = new MediaPlayer();
+        _mediaPlayer = new MediaPlayer();
 
         _mediaPlayer.setOnCompletionListener(this);
         _mediaPlayer.setOnErrorListener(this);
         _mediaPlayer.setOnPreparedListener(this);
-        _mediaPlayer.setOnBufferingUpdateListener(this);
-        _mediaPlayer.setOnSeekCompleteListener(this);
-        _mediaPlayer.setOnInfoListener(this);
         _mediaPlayer.reset();
 
         _mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -291,8 +277,6 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnComplet
         } else {
             builder.setWhen(0).setShowWhen(true).setUsesChronometer(false);
         }
-
-        builder.setOngoing(playbackStatus == PlaybackStatus.PLAYING);
     }
 
     private BroadcastReceiver playNewAudio = new BroadcastReceiver() {
@@ -369,7 +353,7 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
     private void initMediaSession() {
-        if (_mediaSessionManager != null) return; //mediaSessionManager exists
+        if (_mediaSessionManager != null) return;
 
         _mediaSessionManager = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
         // Create a new MediaSession
@@ -382,7 +366,6 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnComplet
         // through its MediaSessionCompat.Callback.
         _mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
 
-        //Set mediaSession's MetaData
         updateMetaData();
     }
 
@@ -395,17 +378,17 @@ public class AudioPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
     private void registerPlayNewAudio() {
-        IntentFilter filter = new IntentFilter(MainActivity.BROADCAST_PLAY_NEW_AUDIO);
+        IntentFilter filter = new IntentFilter(BROADCAST_PLAY_NEW_AUDIO);
         registerReceiver(playNewAudio, filter);
     }
 
     private void registerPauseAudio() {
-        IntentFilter filter = new IntentFilter(MainActivity.BROADCAST_PAUSE_AUDIO);
+        IntentFilter filter = new IntentFilter(BROADCAST_PAUSE_AUDIO);
         registerReceiver(pauseAudio, filter);
     }
 
     private void registerResumeAudio() {
-        IntentFilter filter = new IntentFilter(MainActivity.BROADCAST_RESUME_AUDIO);
+        IntentFilter filter = new IntentFilter(BROADCAST_RESUME_AUDIO);
         registerReceiver(resumeAudio, filter);
     }
 }

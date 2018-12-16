@@ -1,8 +1,10 @@
 package ua.nure.musicplayer;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -34,9 +36,6 @@ import ua.nure.musicplayer.utils.StorageUtil;
 
 public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener {
     private static final int MY_PERMISSION_REQUEST = 1;
-    public static final String BROADCAST_PLAY_NEW_AUDIO = "ua.nure.musicplayer.PlayNewAudio";
-    public static final String BROADCAST_PAUSE_AUDIO = "ua.nure.musicplayer.PauseAudio";
-    public static final String BROADCAST_RESUME_AUDIO = "ua.nure.musicplayer.ResumeAudio";
 
     private AudioPlayerService _player;
     private boolean _serviceBound = false;
@@ -60,7 +59,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     private ImageButton _playPauseBtn;
     private ImageButton _repeatBtn;
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,11 +78,12 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         }
 
         initViewElements();
+        registerGetNextAudio();
     }
 
     @Override
     protected void onPause() {
-       _player.buildNotification(_isPaused ? PlaybackStatus.PAUSED : PlaybackStatus.PLAYING);
+        _player.buildNotification(_isPaused ? PlaybackStatus.PAUSED : PlaybackStatus.PLAYING);
         super.onPause();
     }
 
@@ -93,7 +92,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         _player.removeNotification();
         super.onRestart();
     }
-
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -137,11 +135,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         _mHandler.removeCallbacks(mUpdateTimeTask);
         int totalDuration = _player.getCurrentAudioDuration();
         int currentPosition = ProgressUtils.progressToTimer(seekBar.getProgress(), totalDuration);
-
-        if (currentPosition > totalDuration - 500) {
-            playNextAudio();
-            return;
-        }
 
         _player.seekTo(currentPosition);
         updateProgressBar();
@@ -212,13 +205,20 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             StorageUtil storage = new StorageUtil(getApplicationContext());
             storage.storeAudioIndex(audioIndex);
 
-            Intent broadcastIntent = new Intent(BROADCAST_PLAY_NEW_AUDIO);
+            Intent broadcastIntent = new Intent(AudioPlayerService.BROADCAST_PLAY_NEW_AUDIO);
             sendBroadcast(broadcastIntent);
         }
         processIsPaused();
         setupProgressBar();
         updateCurrentAudioView();
     }
+
+    private BroadcastReceiver getNextAudio = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            playNextAudio();
+        }
+    };
 
     private void loadAudio() {
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
@@ -318,11 +318,11 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     private void processIsPaused() {
         if (_isPaused) {
             _playPauseBtn.setImageResource(android.R.drawable.ic_media_play);
-            Intent broadcastIntent = new Intent(BROADCAST_PAUSE_AUDIO);
+            Intent broadcastIntent = new Intent(AudioPlayerService.BROADCAST_PAUSE_AUDIO);
             sendBroadcast(broadcastIntent);
         } else {
             _playPauseBtn.setImageResource(android.R.drawable.ic_media_pause);
-            Intent broadcastIntent = new Intent(BROADCAST_RESUME_AUDIO);
+            Intent broadcastIntent = new Intent(AudioPlayerService.BROADCAST_RESUME_AUDIO);
             sendBroadcast(broadcastIntent);
         }
     }
@@ -371,10 +371,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 currentDuration = totalDuration;
             }
 
-            if (currentDuration == totalDuration && totalDuration != 0) {
-                playNextAudio();
-                return;
-            }
             _audioTime.setText(ProgressUtils.milliSecondsToTimer(currentDuration) +
                     " / " +
                     ProgressUtils.milliSecondsToTimer(totalDuration));
@@ -382,8 +378,12 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             int progress = (int) (ProgressUtils.getProgressPercentage(currentDuration, totalDuration));
             _progressBar.setProgress(progress);
 
-            // Running this thread after 100 milliseconds
             _mHandler.postDelayed(this, 100);
         }
     };
+
+    private void registerGetNextAudio() {
+        IntentFilter filter = new IntentFilter(AudioPlayerService.BROADCAST_GET_NEXT_AUDIO);
+        registerReceiver(getNextAudio, filter);
+    }
 }
